@@ -514,43 +514,56 @@ asmlinkage __visible void __init start_kernel(void)
 {
 	char *command_line;
 	char *after_dashes;
+	#define MOUTL(v) outl(v,0x03f0)
 
-	set_task_stack_end_magic(&init_task);
-	smp_setup_processor_id();
-	debug_objects_early_init();
+	MOUTL(0);
+	set_task_stack_end_magic(&init_task);MOUTL(1);
+	smp_setup_processor_id();MOUTL(2);
+	debug_objects_early_init();MOUTL(3);
 
-	cgroup_init_early();
+	cgroup_init_early();MOUTL(4);
 
-	local_irq_disable();
+	local_irq_disable();MOUTL(5);
 	early_boot_irqs_disabled = true;
 
 	/*
 	 * Interrupts are still disabled. Do necessary setups, then
 	 * enable them.
 	 */
-	boot_cpu_init();
-	page_address_init();
-	pr_notice("%s", linux_banner);
-	setup_arch(&command_line);
+	boot_cpu_init();MOUTL(6);
+	page_address_init();MOUTL(7);
+	pr_notice("%s", linux_banner);MOUTL(8);
+// comment from random.c:
+/*
+ * Note that setup_arch() may call add_device_randomness()
+ * long before we get here. This allows seeding of the pools
+ * with some platform dependent data very early in the boot
+ * process. But it limits our options here. We must use
+ * statically allocated structures that already have all
+ * initializations complete at compile time. We should also
+ * take care not to overwrite the precious per platform data
+ * we were given.
+ */
+	setup_arch(&command_line);MOUTL(9);
 	/*
 	 * Set up the the initial canary and entropy after arch
 	 * and after adding latent and command line entropy.
 	 */
-	add_latent_entropy();
-	add_device_randomness(command_line, strlen(command_line));
-	boot_init_stack_canary();
-	mm_init_cpumask(&init_mm);
-	setup_command_line(command_line);
-	setup_nr_cpu_ids();
-	setup_per_cpu_areas();
-	smp_prepare_boot_cpu();	/* arch-specific boot-cpu hooks */
-	boot_cpu_hotplug_init();
+	add_latent_entropy();MOUTL(10);
+	add_device_randomness(command_line, strlen(command_line));MOUTL(11);
+	boot_init_stack_canary();MOUTL(12);
+	mm_init_cpumask(&init_mm);MOUTL(13);
+	setup_command_line(command_line);MOUTL(14);
+	setup_nr_cpu_ids();MOUTL(15);
+	setup_per_cpu_areas();MOUTL(16);
+	smp_prepare_boot_cpu();	MOUTL(17);/* arch-specific boot-cpu hooks */
+	boot_cpu_hotplug_init();MOUTL(18);
 
-	build_all_zonelists(NULL);
-	page_alloc_init();
+	build_all_zonelists(NULL);MOUTL(19);
+	page_alloc_init();MOUTL(20);
 
-	pr_notice("Kernel command line: %s\n", boot_command_line);
-	parse_early_param();
+	pr_notice("Kernel command line: %s\n", boot_command_line);MOUTL(21);
+	parse_early_param();MOUTL(22);
 	after_dashes = parse_args("Booting kernel",
 				  static_command_line, __start___param,
 				  __stop___param - __start___param,
@@ -559,92 +572,92 @@ asmlinkage __visible void __init start_kernel(void)
 		parse_args("Setting init args", after_dashes, NULL, 0, -1, -1,
 			   NULL, set_init_arg);
 
-	jump_label_init();
+	jump_label_init();MOUTL(23);
 
 	/*
 	 * These use large bootmem allocations and must precede
 	 * kmem_cache_init()
 	 */
-	setup_log_buf(0);
-	pidhash_init();
-	vfs_caches_init_early();
-	sort_main_extable();
-	trap_init();
-	mm_init();
+	setup_log_buf(0);MOUTL(24);
+	pidhash_init();MOUTL(25);
+	vfs_caches_init_early();MOUTL(26);
+	sort_main_extable();MOUTL(27);
+	trap_init();MOUTL(28);
+	mm_init();MOUTL(29);
 
-	ftrace_init();
+	ftrace_init();MOUTL(30);
 
 	/* trace_printk can be enabled here */
-	early_trace_init();
+	early_trace_init();MOUTL(31);
 
 	/*
 	 * Set up the scheduler prior starting any interrupts (such as the
 	 * timer interrupt). Full topology setup happens at smp_init()
 	 * time - but meanwhile we still have a functioning scheduler.
 	 */
-	sched_init();
+	sched_init();MOUTL(32);
 	/*
 	 * Disable preemption - early bootup scheduling is extremely
 	 * fragile until we cpu_idle() for the first time.
 	 */
-	preempt_disable();
+	preempt_disable();MOUTL(33);
 	if (WARN(!irqs_disabled(),
 		 "Interrupts were enabled *very* early, fixing it\n"))
 		local_irq_disable();
-	radix_tree_init();
+	radix_tree_init();MOUTL(34);
 
 	/*
 	 * Allow workqueue creation and work item queueing/cancelling
 	 * early.  Work item execution depends on kthreads and starts after
 	 * workqueue_init().
 	 */
-	workqueue_init_early();
+	workqueue_init_early();MOUTL(35);
 
-	rcu_init();
+	rcu_init();MOUTL(36);
 
 	/* Trace events are available after this */
-	trace_init();
+	trace_init();MOUTL(37);
 
-	context_tracking_init();
+	context_tracking_init();MOUTL(38);
 	/* init some links before init_ISA_irqs() */
-	early_irq_init();
-	init_IRQ();
-	tick_init();
-	rcu_init_nohz();
-	init_timers();
-	hrtimers_init();
-	softirq_init();
-	timekeeping_init();
-	time_init();
-	sched_clock_postinit();
-	printk_safe_init();
-	perf_event_init();
-	profile_init();
-	call_function_init();
+	early_irq_init();MOUTL(39);
+	init_IRQ();MOUTL(40);
+	tick_init();MOUTL(41);
+	rcu_init_nohz();MOUTL(42);
+	init_timers();MOUTL(43);
+	hrtimers_init();MOUTL(44);
+	softirq_init();MOUTL(45);
+	timekeeping_init();MOUTL(46);
+	time_init();MOUTL(47);
+	sched_clock_postinit();MOUTL(48);
+	printk_safe_init();MOUTL(49);
+	perf_event_init();MOUTL(50);
+	profile_init();MOUTL(51);
+	call_function_init();MOUTL(53);
 	WARN(!irqs_disabled(), "Interrupts were enabled early\n");
 	early_boot_irqs_disabled = false;
-	local_irq_enable();
+	local_irq_enable();MOUTL(54);
 
-	kmem_cache_init_late();
+	kmem_cache_init_late();MOUTL(55);
 
 	/*
 	 * HACK ALERT! This is early. We're enabling the console before
 	 * we've done PCI setups etc, and console_init() must be aware of
 	 * this. But we do want output early, in case something goes wrong.
 	 */
-	console_init();
+	console_init();MOUTL(56);
 	if (panic_later)
 		panic("Too many boot %s vars at `%s'", panic_later,
 		      panic_param);
 
-	lockdep_info();
+	lockdep_info();MOUTL(57);
 
 	/*
 	 * Need to run this when irqs are enabled, because it wants
 	 * to self-test [hard/soft]-irqs on/off lock inversion bugs
 	 * too:
 	 */
-	locking_selftest();
+	locking_selftest();MOUTL(58);
 
 	/*
 	 * This needs to be called before any devices perform DMA
@@ -652,7 +665,7 @@ asmlinkage __visible void __init start_kernel(void)
 	 * mark the bounce buffers as decrypted so that their usage will
 	 * not cause "plain-text" data to be decrypted when accessed.
 	 */
-	mem_encrypt_init();
+	mem_encrypt_init();MOUTL(59);
 
 #ifdef CONFIG_BLK_DEV_INITRD
 	if (initrd_start && !initrd_below_start_ok &&
@@ -663,51 +676,52 @@ asmlinkage __visible void __init start_kernel(void)
 		initrd_start = 0;
 	}
 #endif
-	page_ext_init();
-	kmemleak_init();
-	debug_objects_mem_init();
-	setup_per_cpu_pageset();
-	numa_policy_init();
-	if (late_time_init)
-		late_time_init();
-	calibrate_delay();
-	pidmap_init();
-	anon_vma_init();
-	acpi_early_init();
+	page_ext_init();MOUTL(60);
+	kmemleak_init();MOUTL(61);
+	debug_objects_mem_init();MOUTL(62);
+	setup_per_cpu_pageset();MOUTL(63);
+	numa_policy_init();MOUTL(64);
+	if (late_time_init){
+		late_time_init();MOUTL(99);
+	}
+	calibrate_delay();MOUTL(65);
+	pidmap_init();MOUTL(66);
+	anon_vma_init();MOUTL(67);
+	acpi_early_init();MOUTL(68);
 #ifdef CONFIG_X86
 	if (efi_enabled(EFI_RUNTIME_SERVICES))
 		efi_enter_virtual_mode();
 #endif
-	thread_stack_cache_init();
-	cred_init();
-	fork_init();
-	proc_caches_init();
-	buffer_init();
+	thread_stack_cache_init();MOUTL(69);
+	cred_init();MOUTL(70);
+	fork_init();MOUTL(71);
+	proc_caches_init();MOUTL(72);
+	buffer_init();MOUTL(73);
 	key_init();
 	security_init();
 	dbg_late_init();
 	vfs_caches_init();
 	pagecache_init();
-	signals_init();
+	signals_init();MOUTL(74);
 	proc_root_init();
 	nsfs_init();
-	cpuset_init();
+	cpuset_init();MOUTL(75);
 	cgroup_init();
 	taskstats_init_early();
-	delayacct_init();
+	delayacct_init();MOUTL(76);
 
-	check_bugs();
+	check_bugs();MOUTL(77);
 
-	acpi_subsystem_init();
-	arch_post_acpi_subsys_init();
-	sfi_init_late();
+	acpi_subsystem_init();MOUTL(78);
+	arch_post_acpi_subsys_init();MOUTL(79);
+	sfi_init_late();MOUTL(80);
 
 	if (efi_enabled(EFI_RUNTIME_SERVICES)) {
-		efi_free_boot_services();
+		efi_free_boot_services();MOUTL(81);
 	}
 
 	/* Do the rest non-__init'ed, we're now alive */
-	rest_init();
+	rest_init();MOUTL(82);
 }
 
 /* Call all constructor functions linked into the kernel. */
